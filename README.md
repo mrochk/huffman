@@ -1,5 +1,5 @@
 # Huffman
-Implementation of the Huffman encoding algorithm.
+Implementation of the Huffman coding algorithm.
 
 References:
 - https://en.wikipedia.org/wiki/Huffman_coding
