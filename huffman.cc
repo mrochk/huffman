@@ -11,6 +11,49 @@
 
 using namespace std;
 
+HuffmanNode::HuffmanNode() {
+    this->symbol = ' ';
+    this->occurs = 0;
+    left         = EMPTY;
+    right        = EMPTY;
+};
+
+HuffmanNode::HuffmanNode(char symbol, uint occurs) {
+    this->symbol = symbol;
+    this->occurs = occurs;
+    left         = EMPTY;
+    right        = EMPTY;
+}
+
+HuffmanNode::HuffmanNode(char symbol, uint occurs, HuffmanNode *left,
+                         HuffmanNode *right) {
+    this->symbol = symbol;
+    this->occurs = occurs;
+    this->left   = left;
+    this->right  = right;
+}
+
+HuffmanNode::~HuffmanNode() {
+    if (this->left != EMPTY) delete (left);
+    if (this->left != EMPTY) delete (right);
+}
+
+uint Huffman::encode_file(string filename) {
+    ifstream file;
+
+    file.open(filename);
+    assert(!file.fail() && "ERROR: when opening the file");
+
+    auto occurs_map   = create_map_of_occurrences(file);
+    auto huffman_tree = create_huffman_tree(occurs_map);
+    auto codes        = create_map_of_codes(huffman_tree);
+
+    print_dict(codes);
+
+    delete (huffman_tree);
+    return compute_diff(file, codes);
+}
+
 map<char, uint> Huffman::create_map_of_occurrences(ifstream &file) {
     assert(file);
 
@@ -20,25 +63,22 @@ map<char, uint> Huffman::create_map_of_occurrences(ifstream &file) {
     while (!file.eof()) {
         getline(file, line);
         for (auto &c : line) map_occurs[c]++;
-        line.clear();
     }
 
     return map_occurs;
 }
 
-HuffmanTree *Huffman::create_huffman_tree(map<char, uint> occurs_map) {
-    auto compare =
-        ([](HuffmanNode *a, HuffmanNode *b) { return a->occurs > b->occurs; });
+HuffmanTree *Huffman::create_huffman_tree(map<char, uint> &occurrences_map) {
+    Heap<HuffmanNode *> heap(
+        [](HuffmanNode *a, HuffmanNode *b) { return a->occurs > b->occurs; });
 
-    Heap<HuffmanNode *> heap(compare);
-
-    for (auto &p : occurs_map) heap.insert(new HuffmanNode(p.first, p.second));
+    for (auto &p : occurrences_map)
+        heap.insert(new HuffmanNode(p.first, p.second));
 
     while (heap.get_size() > 1) {
-        auto first  = heap.pop_top();
-        auto second = heap.pop_top();
-        auto inode  = new HuffmanNode('$', (first->occurs + second->occurs),
-                                     first, second);
+        auto a = heap.pop_top(), b = heap.pop_top();
+        auto inode =
+            new HuffmanNode(INODE_SYMBOL, (a->occurs + b->occurs), a, b);
         heap.insert(inode);
     }
 
@@ -48,7 +88,8 @@ HuffmanTree *Huffman::create_huffman_tree(map<char, uint> occurs_map) {
 void Huffman::_create_map_of_codes(HuffmanNode *node, string code,
                                    map<char, string> &codes) {
     if (node == nullptr) return;
-    if (node->symbol != '$') {
+
+    if (node->symbol != INODE_SYMBOL) {
         codes[node->symbol] = code;
         return;
     }
@@ -66,26 +107,6 @@ map<char, string> Huffman::create_map_of_codes(HuffmanTree *tree) {
     return codes;
 }
 
-void print_dict(map<char, string> &codes) {
-    vector<pair<char, string>> sorted;
-    for (auto &c : codes) {
-        sorted.push_back(c);
-    }
-
-    auto compare = [](pair<char, string> a, pair<char, string> b) {
-        return a.second.size() < b.second.size();
-    };
-
-    sort(sorted.begin(), sorted.end(), compare);
-
-    cout << "---------------------\nGenerated "
-            "Dictionary:\n---------------------\n";
-
-    for (auto &p : sorted)
-        cout << ((p.first == 32) ? '_' : p.first) << " :: " << p.second << '\n';
-    cout << "---------------------";
-}
-
 uint Huffman::compute_diff(ifstream &file, map<char, string> &codes) {
     string line;
     uint len_encoded, len_base;
@@ -96,7 +117,6 @@ uint Huffman::compute_diff(ifstream &file, map<char, string> &codes) {
 
     while (!file.eof()) {
         getline(file, line);
-
         for (auto &c : line) {
             auto code = codes[c];
             len_encoded += code.size();
@@ -115,19 +135,20 @@ uint Huffman::compute_diff(ifstream &file, map<char, string> &codes) {
     return len_encoded;
 }
 
-uint Huffman::encode_file(string filename) {
-    ifstream file;
+void print_dict(map<char, string> &codes) {
+    vector<pair<char, string>> sorted;
 
-    file.open(filename);
-    assert(!file.fail() && "ERROR: when opening the file");
-    assert(!(file.peek() == std::ifstream::traits_type::eof()) &&
-           "ERROR: empty file provided");
+    for (auto &c : codes) sorted.push_back(c);
 
-    auto occurs_map   = create_map_of_occurrences(file);
-    auto huffman_tree = create_huffman_tree(occurs_map);
-    auto codes        = create_map_of_codes(huffman_tree);
+    auto compare = [](pair<char, string> a, pair<char, string> b) {
+        return a.second.size() < b.second.size();
+    };
 
-    print_dict(codes);
+    sort(sorted.begin(), sorted.end(), compare);
 
-    return compute_diff(file, codes);
+    cout << "---------------------\nGenerated "
+            "Dictionary:\n---------------------\n";
+    for (auto &p : sorted)
+        cout << ((p.first == 32) ? '_' : p.first) << " :: " << p.second << '\n';
+    cout << "---------------------";
 }
