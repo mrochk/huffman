@@ -52,6 +52,8 @@ class Huffman {
     /* Replaces every text file characted by his associated prefix-code and
      * returns his new size in bytes. */
     uint compute_diff(ifstream &file, map<char, string> &codes);
+
+    void print_dict(map<char, string>& codes);
 };
 
 #endif

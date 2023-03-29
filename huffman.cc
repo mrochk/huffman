@@ -135,7 +135,7 @@ uint Huffman::compute_diff(ifstream &file, map<char, string> &codes) {
     return len_encoded;
 }
 
-void print_dict(map<char, string> &codes) {
+void Huffman::print_dict(map<char, string> &codes) {
     vector<pair<char, string>> sorted;
 
     for (auto &c : codes) sorted.push_back(c);
