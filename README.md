@@ -1,6 +1,8 @@
 # Huffman
 Implementation of the Huffman coding algorithm.
 
+<img src="./ss.png" width="300px">
+
 References:
 - https://en.wikipedia.org/wiki/Huffman_coding
 - https://cmps-people.ok.ubc.ca/ylucet/DS/Huffman.html
