@@ -11,7 +11,8 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    encoder.encode_file(argv[1]);
+    char* file = argv[1];
+    encoder.encode_file(file);
 
     return 0;
 }

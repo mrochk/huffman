@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "heap.h"
+#include "heap.hh"
 
 using namespace std;
 
@@ -109,7 +109,7 @@ map<char, string> Huffman::create_map_of_codes(HuffmanTree *tree) {
 
 uint Huffman::compute_diff(ifstream &file, map<char, string> &codes) {
     string line;
-    uint len_encoded, len_base;
+    float len_encoded, len_base;
     len_base = len_encoded = 0;
 
     file.clear();
@@ -126,11 +126,13 @@ uint Huffman::compute_diff(ifstream &file, map<char, string> &codes) {
     }
 
     len_encoded /= 8;
+    int percentage = int(((len_encoded / len_base) - 1) * 100);
 
     cout << "\nAssuming the characters are ASCII encoded:\n";
     cout << " - Provided file size: " << len_base << " bytes.\n";
     cout << " - Huffman encoded file size: " << len_encoded << " bytes.\n";
-    cout << " - Difference: -" << len_base - len_encoded << " bytes.\n";
+    cout << " - Difference: -" << len_base - len_encoded << " bytes (" << 
+        percentage << "%).\n";
 
     return len_encoded;
 }

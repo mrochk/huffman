@@ -7,87 +7,62 @@
 #include <functional>
 #include <stack>
 
-#include "utils.h"
-
+#define EMPTY nullptr
 #define DEFAULT_HEAP_SIZE 0
 
-/* Type to represent paths in binary-trees. */
+/* Used to represent path in binary tree. */
 typedef enum { L, R } Direction;
 
-/* Nodes used in the heap. */
-template <typename T>
-class Node {
+template <typename T> class Node {
    public:
-    /* The data the user wants to store. */
     T data;
 
-    /* The node's left child. */
-    Node *left;
+    /* The node's children. */
+    Node *left, *right;
 
-    /* The node's right child. */
-    Node *right;
-
-    /****************************************************************************/
-
-    /* Intantiates a leaf. */
+    /* Create a leaf. */
     Node(T data);
 
-    /* Intantiates an internal node. */
+    /* Create an internal node. */
     Node(T data, Node *left, Node *right);
 
-    /* Returns the children corresponding to the given direction. */
+    /* Return the children corresponding to the given direction. */
     Node *get_child(Direction d);
 
-    /* Inserts a children as left or right child, depending on the direction.
-       @param direction Where we should insert the child node : L or R.
-       @param node The node to insert. */
+    /* Insert a children depending on the direction. */
     void insert(Direction direction, Node<T> *node);
 
-    /* Deletes the node and his children, recursively. */
     ~Node();
 };
 
-template <typename T>
-class Heap {
+template <typename T> class Heap {
    public:
-    /* Creates a new empty (min) heap. */
+    /* Create a new empty (default: min) heap. */
     Heap();
 
-    /* Creates a new empty heap that uses compare(a, b) to prioritise elements.
-     * @param compare Should return true if priority(a) < priority(b).*/
+    /* Create a new empty heap that uses compare(a, b) to prioritise elements.
+     * @param compare Should return true if p(a) < p(b).*/
     Heap(bool (*compare)(T, T));
 
-    /* Returns the number of nodes in the heap. */
     uint get_size();
 
-    /* Inserts a new node in the heap.
-       @param node The node to insert. */
     void insert(T element);
 
-    /* Deletes and returns the top element. */
     T pop_top();
 
-    /* Returns the top element. */
     T get_top();
 
-    /* Deletes the heap and his tree. */
     ~Heap();
 
    private:
-    /* The heap binary-tree. */
     Node<T> *tree;
 
-    /* The number of nodes in the heap binary-tree. */
     uint size;
 
-    /* The function used to compare two elements. Should return true if
-       priority(a) < priority(b).*/
     std::function<bool(T, T)> compare;
 
-    /****************************************************************************/
-
-    /* Get the directions to get to the last leaf in a
-     * quasi-perfect binary-tree of size n.
+    /* Return the path to get to the last leaf in a
+     * quasi-perfect binary tree of size n.
      */
     std::stack<Direction> get_dirlist(uint n, std::stack<Direction> = {});
 
@@ -95,69 +70,59 @@ class Heap {
     void insert_leaf(Node<T> *tree, Node<T> *to_insert,
                      std::stack<Direction> dirlist);
 
-    /* Bubble-up a leaf until it restablishes the heap property. */
+    /* Bubble-up a leaf to restablish the heap property. */
     void bubble_up(std::stack<Direction> &dirlist);
     void _bubble_up(Node<T> *node, std::stack<Direction> &dirlist);
 
-    /* Swap two nodes of the heap. */
     void swap_nodes(Node<T> *a, Node<T> *b);
 
-    /* Deletes from the heap and returns the leaf located at this path. */
     T pop_leaf(Node<T> *node, std::stack<Direction> dirlist);
 
-    /* Bubbles down the root node until the heap property is restablished. */
+    /* Bubble-down the root to restablish the heap property. */
     void bubble_down(Node<T> *node);
 };
 
 /* NODE ***********************************************************************/
 
-template <typename T>
-Node<T>::Node(T data) {
+template <typename T> Node<T>::Node(T data) {
     this->data = data;
     left = right = EMPTY;
 }
 
-template <typename T>
-Node<T>::Node(T data, Node *left, Node *right) {
+template <typename T> Node<T>::Node(T data, Node *left, Node *right) {
     this->data  = data;
     this->left  = left;
     this->right = right;
 }
 
-template <typename T>
-Node<T> *Node<T>::get_child(Direction direction) {
+template <typename T> Node<T> *Node<T>::get_child(Direction direction) {
     return direction == L ? left : right;
 }
 
-template <typename T>
-void Node<T>::insert(Direction direction, Node<T> *node) {
+template <typename T> void Node<T>::insert(Direction direction, Node<T> *node) {
     direction == L ? left = node : right = node;
 }
 
-template <typename T>
-Node<T>::~Node() {
+template <typename T> Node<T>::~Node() {
     if (left != EMPTY) delete (left);
     if (right != EMPTY) delete (right);
 }
 
 /* HEAP ***********************************************************************/
 
-template <typename T>
-Heap<T>::Heap() {
+template <typename T> Heap<T>::Heap() {
     compare = [](T a, T b) { return a > b; };
     size    = DEFAULT_HEAP_SIZE;
     tree    = EMPTY;
 }
 
-template <typename T>
-Heap<T>::Heap(bool compare(T, T)) {
+template <typename T> Heap<T>::Heap(bool compare(T, T)) {
     this->compare = compare;
     size          = DEFAULT_HEAP_SIZE;
     tree          = EMPTY;
 }
 
-template <typename T>
-void Heap<T>::insert(T element) {
+template <typename T> void Heap<T>::insert(T element) {
     Node<T> *node = new Node<T>(element);
 
     if (++size == 1) {
@@ -171,7 +136,7 @@ void Heap<T>::insert(T element) {
 }
 
 template <typename T>
-std::stack<Direction> Heap<T>::get_dirlist(uint n,
+std::stack<Direction> Heap<T>::get_dirlist(uint                  n,
                                            std::stack<Direction> directions) {
     if (n < 2) return directions;
     n % 2 == 0 ? directions.push(L) : directions.push(R);
@@ -200,8 +165,7 @@ void Heap<T>::insert_leaf(Node<T> *tree, Node<T> *to_insert,
     insert_leaf(child, to_insert, dirlist);
 }
 
-template <typename T>
-void Heap<T>::bubble_up(std::stack<Direction> &dirlist) {
+template <typename T> void Heap<T>::bubble_up(std::stack<Direction> &dirlist) {
     _bubble_up(tree, dirlist);
 }
 
@@ -209,9 +173,9 @@ template <typename T>
 void Heap<T>::_bubble_up(Node<T> *node, std::stack<Direction> &dirlist) {
     assert(!dirlist.empty() && "ERROR: empty dirlist");
 
-    Direction direction = stack_pop(dirlist);
-    Node<T> *child      = node->get_child(direction);
-    T child_data = child->data, node_data = node->data;
+    Direction direction  = stack_pop(dirlist);
+    Node<T> * child      = node->get_child(direction);
+    T         child_data = child->data, node_data = node->data;
 
     if (dirlist.empty()) {
         if (compare(node_data, child_data)) swap_nodes(node, child);
@@ -226,8 +190,7 @@ void Heap<T>::_bubble_up(Node<T> *node, std::stack<Direction> &dirlist) {
     if (compare(node_data, child_data)) swap_nodes(node, child);
 }
 
-template <typename T>
-void Heap<T>::swap_nodes(Node<T> *a, Node<T> *b) {
+template <typename T> void Heap<T>::swap_nodes(Node<T> *a, Node<T> *b) {
     assert(a && b && "ERROR: empty node");
 
     T temp  = a->data;
@@ -235,8 +198,7 @@ void Heap<T>::swap_nodes(Node<T> *a, Node<T> *b) {
     b->data = temp;
 }
 
-template <typename T>
-T Heap<T>::pop_top() {
+template <typename T> T Heap<T>::pop_top() {
     assert(size > 0 && "ERROR: heap tree is empty");
 
     T data = tree->data;
@@ -262,7 +224,7 @@ T Heap<T>::pop_leaf(Node<T> *node, std::stack<Direction> dirlist) {
     assert(!dirlist.empty() && "ERROR: empty dirlist");
 
     Direction direction = stack_pop(dirlist);
-    Node<T> *child      = node->get_child(direction);
+    Node<T> * child     = node->get_child(direction);
 
     if (dirlist.empty()) {
         T data = child->data;
@@ -274,11 +236,10 @@ T Heap<T>::pop_leaf(Node<T> *node, std::stack<Direction> dirlist) {
     return pop_leaf(child, dirlist);
 }
 
-template <typename T>
-void Heap<T>::bubble_down(Node<T> *node) {
-    Node<T> *child;
+template <typename T> void Heap<T>::bubble_down(Node<T> *node) {
+    Node<T> * child;
     Direction dir;
-    T node_data = node->data;
+    T         node_data = node->data;
 
     if (node->left == EMPTY) return;
 
@@ -299,24 +260,15 @@ void Heap<T>::bubble_down(Node<T> *node) {
         swap_nodes(node, child);
         bubble_down(child);
     }
-
-    return;
 }
 
-template <typename T>
-uint Heap<T>::get_size() {
-    return size;
-}
+template <typename T> uint Heap<T>::get_size() { return size; }
 
-template <typename T>
-T Heap<T>::get_top() {
+template <typename T> T Heap<T>::get_top() {
     assert(!(tree == EMPTY) && "ERROR: Attempting to insert in empty heap.");
     return this->tree->data;
 }
 
-template <typename T>
-Heap<T>::~Heap() {
-    delete (tree);
-}
+template <typename T> Heap<T>::~Heap() { delete (tree); }
 
 #endif

@@ -4,10 +4,7 @@ all: build
 
 build: 
 > @mkdir -p bin
-> @g++ -Wall main.cc huffman.cc heap.h utils.h -pedantic -o bin/huffman
-
-run: build
-> @./bin/huffman
+> @g++ -Wall main.cc huffman.cc heap.hh utils.h -pedantic -o bin/huffman
 
 test_small:
 > @echo "Testing on a ~100 characters file:"
