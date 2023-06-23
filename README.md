@@ -17,7 +17,7 @@ You can then test it on different sized files by typing one of these 3 commands:
 make test_<small/medium/large>
 ```
 
-You can also provide ur own text-file:
+You can also provide your own text-file:
 ```
 ./bin/huffman <filename>
 ```
