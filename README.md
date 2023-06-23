@@ -1,5 +1,5 @@
 # Huffman
-Implementation of the Huffman coding algorithm.
+Huffman coding gain calculator for text files.
 
 References:
 - https://en.wikipedia.org/wiki/Huffman_coding
