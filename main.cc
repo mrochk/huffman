@@ -1,10 +1,10 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "huffman.h"
+#include "huffman.hpp"
 
 int main(int argc, char **argv) {
-    Huffman encoder;
+    Huffman huff;
 
     if (argc < 2) {
         std::cerr << "Usage: huffman <file_to_encode>\n";
@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
     }
 
     char *filename = argv[1];
-    encoder.encode_file(filename);
+    huff.encoded_file_size(filename);
 
     return EXIT_SUCCESS;
 }

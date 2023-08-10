@@ -1,4 +1,4 @@
-#include "huffman.h"
+#include "huffman.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "heap.h"
+#include "binary_heap.hpp"
 
 using namespace std;
 
@@ -39,7 +39,7 @@ HuffmanNode::~HuffmanNode() {
     if (this->left != EMPTY) delete (right);
 }
 
-uint Huffman::encode_file(string filename) {
+uint Huffman::encoded_file_size(string filename) {
     ifstream file;
 
     file.open(filename);
@@ -70,7 +70,7 @@ map<char, uint> Huffman::create_map_of_occurrences(ifstream &file) {
 }
 
 HuffmanTree *Huffman::create_huffman_tree(map<char, uint> &occurrences_map) {
-    Heap<HuffmanNode *> heap(
+    BinaryHeap<HuffmanNode *> heap(
         [](HuffmanNode *a, HuffmanNode *b) { return a->occurs > b->occurs; });
 
     for (auto &p : occurrences_map)
@@ -127,14 +127,8 @@ uint Huffman::compute_diff(ifstream &file, map<char, string> &codes) {
     }
 
     len_encoded /= 8;
-    int percentage = int(((len_encoded / len_base) - 1) * 100);
 
-    cout << "\nAssuming the characters are ASCII encoded:\n";
-    cout << " - Provided file size: " << len_base << " bytes.\n";
-    cout << " - The Huffman encoded file size would be: " << ceil(len_encoded)
-         << " bytes.\n";
-    cout << " - Difference: -" << len_base - ceil(len_encoded) << " bytes ("
-         << percentage << "%).\n";
+    print_resume(len_base, len_encoded);
 
     return len_encoded;
 }
@@ -155,4 +149,16 @@ void Huffman::print_dict(map<char, string> &codes) {
     for (auto &p : sorted)
         cout << ((p.first == 32) ? '_' : p.first) << " :: " << p.second << '\n';
     cout << "---------------------";
+}
+
+void Huffman::print_resume(int initial_size, int enc_size) {
+    double percent_loss =
+        -(static_cast<double>(initial_size - enc_size) / initial_size) * 100;
+
+    cout << "\nAssuming the characters are ASCII encoded:\n";
+    cout << " - Provided file size: " << initial_size << " bytes.\n";
+    cout << " - The Huffman encoded file size would be " << ceil(enc_size)
+         << " bytes.\n";
+    cout << " - Difference: -" << initial_size - ceil(enc_size) << " bytes ("
+         << int(percent_loss) << "%).\n";
 }
