@@ -5,7 +5,7 @@ References:
 - https://en.wikipedia.org/wiki/Huffman_coding
 - https://cmps-people.ok.ubc.ca/ylucet/DS/Huffman.html
 
-This program outputs what would be a provided file size in bytes if it was encoded using the Huffman coding, and how much we would gain.
+This program outputs what would be a provided file size in bytes if it was encoded using the Huffman coding, and how much bytes we would gain compared to the original file size.
 
 To try it, first build the project using `make`.
 
