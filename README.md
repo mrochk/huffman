@@ -7,18 +7,12 @@ References:
 
 This program outputs what would be a provided file size in bytes if it was encoded using the Huffman coding, and how much bytes we would gain compared to the original file size.
 
-To try it, first build the project using `make`.
-
-You can then test that everything is working properly by typing `make test`.
-
-You can also provide your own text-file:
-```
-./bin/huffman <filename>
-```
-
-**Overall, after some testing with my program, I came to the conclusion that the files compressed using the Huffman coding lose more or less ~40% of their original size.**
+To try it, build the project using `make`.\
+You can test that everything is working properly by typing `make test`.\
+You can then use this program on your own text-files using `./bin/huffman <filename>`.
 
 *NOTES:*
- - *I assume that the original characters are always ASCII encoded, otherwise we would gain even more space.*
+ - *When printing the dictionary, '_' represents then space character.*
+ - *I assume that the input file is always ASCII encoded, otherwise the file we would be more compressed.*
  - *If we would really encode the provided file, we would have to also write the associated Huffman tree to be able to decode it later, which would take additional space.*
- - *I use my own binary heap implementation in this project that you can find [here](https://github.com/mrochk/binary-heap).*
+ - *I use my own minimalist binary heap implementation in this project that you can find [here](https://github.com/mrochk/binary-heap).*

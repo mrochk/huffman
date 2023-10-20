@@ -28,7 +28,9 @@ class Huffman {
    public:
     /* Returns what would be the new file size in bytes if it was encoded
        using Huffman coding. */
-    uint encoded_file_size(string filename);
+    pair<uint, uint> encoded_file_size(string filename);
+
+    void print_resume(int, int);
 
    private:
     map<char, uint> create_map_of_occurrences(ifstream &file);
@@ -39,11 +41,9 @@ class Huffman {
 
     void _create_map_of_codes(HuffmanNode *, string, map<char, string> &);
 
-    uint compute_diff(ifstream &file, map<char, string> &codes);
+    pair<uint, uint> compute_diff(ifstream &file, map<char, string> &codes);
 
     void print_dict(map<char, string> &codes);
-
-    void print_resume(int, int);
 };
 
 #endif

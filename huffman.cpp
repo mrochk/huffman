@@ -39,7 +39,7 @@ HuffmanNode::~HuffmanNode() {
     if (this->left != EMPTY) delete (right);
 }
 
-uint Huffman::encoded_file_size(string filename) {
+pair<uint, uint> Huffman::encoded_file_size(string filename) {
     ifstream file;
 
     file.open(filename);
@@ -108,7 +108,7 @@ map<char, string> Huffman::create_map_of_codes(HuffmanTree *tree) {
     return codes;
 }
 
-uint Huffman::compute_diff(ifstream &file, map<char, string> &codes) {
+pair<uint, uint> Huffman::compute_diff(ifstream &file, map<char, string> &codes) {
     string line;
     float  len_encoded, len_base;
     len_base = len_encoded = 0;
@@ -128,9 +128,7 @@ uint Huffman::compute_diff(ifstream &file, map<char, string> &codes) {
 
     len_encoded /= 8;
 
-    print_resume(len_base, len_encoded);
-
-    return len_encoded;
+    return make_pair(len_base, len_encoded);
 }
 
 void Huffman::print_dict(map<char, string> &codes) {
